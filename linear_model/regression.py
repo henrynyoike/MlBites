@@ -2,8 +2,6 @@ import numpy as np
 from numpy.typing import ArrayLike , NDArray
 import pandas as pd
 from pandas import DataFrame
-from sklearn.metrics import accuracy_score
-from sklearn import linear_model
 
 # Creating a Logistic regression model
 class LogisticRegression :
@@ -60,21 +58,4 @@ class LogisticRegression :
     def predict(self , X:ArrayLike|DataFrame=None):
         return np.array(self._predict(X)) 
 
-#x = np.random.rand(10000 , 1000)
-#y = np.random.randint(0 , 2 , (10000 , 1))
-#
-#model = LogisticRegression()
-#model2 = linear_model.LogisticRegression()
-#
-#model.fit(x , y)
-#model2.fit(x , y.ravel())
-#
-#y_pred1 = model.predict(x)
-#y_pred2 = model2.predict(x)
-#
-#score1 = accuracy_score(y , y_pred1)
-#score2 = accuracy_score(y , y_pred2)
-#
-#print(score1)
-#print(score2)
 
