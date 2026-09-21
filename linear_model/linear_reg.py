@@ -51,7 +51,6 @@ class LinearRegression :
 
         # Initiate the coefficients and bias to zero
         self._coeff = np.linalg.inv((self.X.T@self.X)) @ (self.X.T@self.y) 
-        #self._coeff = np.zeros((self.x_shape[1] , 1))
         self.bias = 0
 
         for _ in range(self.iterations):
