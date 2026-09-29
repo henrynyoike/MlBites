@@ -77,11 +77,10 @@ class DecisionTreeRegressor:
         return self.predict_one(node.right , X)
 
     def predict(self , X:ArrayLike=None):
-        #self.predict_one(self.root_node , X)
-        return np.array([y for y in self.predict_one(self.root_node , np.array(X))])
+        #return np.array([y for y in self.predict_one(self.root_node , np.array(X))])
+        return np.array([self.predict_one(self.root_node , x) for x in np.array(x)])
 
-
-x = np.random.normal(size=(100 , 1))
+x = np.random.normal(size=(100 , 2))
 y = np.random.normal(size=(100 , 1))
 
 model = DecisionTreeRegressor()
@@ -90,6 +89,6 @@ model.fit(x , y)
 
 y_pred = model.predict(x)
 
-#print(y_pred)
+print(y_pred)
 
 
