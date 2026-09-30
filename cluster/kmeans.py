@@ -1,59 +1,86 @@
 from sklearn.datasets import make_blobs
 import numpy as np
-import matplotlib.pyplot as plt
+from numpy.typing import ArrayLike , NDArray
 
-X ,y = make_blobs(n_samples=100 , n_features=1 , centers=10)
-
-x_rows , x_cols = np.shape(X)
-
-K = 10 # Number of clusters
-max_iters = 10 # Max number of iterations
-
-centroids = np.random.randn(K , x_cols) # Set the shape of the centroids
-
-for i in range(K):
-    centroid = X[np.random.choice(range(x_rows))]
-    centroids[i] = centroid
-
-def euclidean_distance(point , centroid):
-    return np.sqrt((point - centroid)**2)
-
-def get_nearest_centroid(value , centroids):
-    nearest_centroid = 0
+class KMeans :
+    def __init__(self , n_clusters:int=3 , max_iters:int=300):
+        self.n_clusters = n_clusters
+        self.X_train = None
+        self.max_iters = max_iters
+        self.clusters = None
+        self.centroids = None
     
-    for index , centroid in enumerate(centroids) :
-        euc_dist = euclidean_distance(value , centroid)
-        if euclidean_distance(value , nearest_centroid) > euc_dist:
-            nearest_centroid = index
-        previous_centroid = euc_dist
-    
-    return nearest_centroid
-
-def get_centroids(values):
-    return np.mean(values)
-
-def create_clusters(centroids , X):
-    clusters = [[] for i in range(K)]
-
-    for index , value in enumerate(X):
-        closest_centroid = get_nearest_centroid(value , centroids)
-
-        clusters[closest_centroid].append(value)
+    def create_clusters(self , X , centroids):
+        clusters = [[] for i in range(self.n_clusters)]
         
-        if value == None :
-            print("Gotcha : " , index)
-            print("!" ** 3000)
-            quit()
-    return clusters
-
-for _ in range(max_iters):
-    # Create Clusters
-    clusters = create_clusters(centroids , X)
-    print(clusters) 
-    # Copy previous centroids
-    previous_centroids = centroids
-    # Create new centroids based on the clusters
-    centroids = [get_centroids(i) for i in clusters]
+        for index , point in X :
+            closest_centroid = self._get_closest_centroid(point , centroids)
+            clusters[closest_centroid].append(point)
     
+        return clusters
 
+    def fit(self , X:ArrayLike=None):
+        self.X_train = X
+        self.samples , self.features = np.shape(self.X_train)
+
+        self.centroids = np.random.randn(self.n_clusters ,  )
+        
+        for i in range(self.n_clusters):
+            self.centroids[i] = np.mean(self.X_train[np.random.choice(self.samples)])
+        
+        self.previous_centroids = self.centroids
+        for _ in range(self.max_iters):
+            self.clusters = self.create_clusters(X , self.centroids)
+            
+            # Create new centroids using the values in each cluster
+            self.centroids = [np.mean(self.clusters[i]) for i in range(self.n_clusters)] 
+
+
+            diff = [self.centroids[i] - self.previous_centroids[i] for i in range(len(self.centroids))]
+            
+            if not np.array(diff).any():
+                return self.centroids , self.clusters
+            
+            self.previous_centroids = self.centroids
+        return self.centroids , self.clusters
+
+    def _predict(self , X:ArrayLike=None):
+        x_new = X
+    
+        # Predict the new data
+        y = []
+        for idx , row in enumerate(X):
+            nearest_centroid = self._get_closest_centroid(row , self.centroids)
+            y.append(nearest_centroid)
+
+        return np.array(y)
+                
+    def predict(self , X:ArrayLike=None):
+        return self._predict(X)
+
+    def _get_closest_centroid(self , point , centroids):
+        min_centroid = 0
+        min_dist = self.euclidean_distance(point , centroids[min_centroid])
+        for index , centroid in enumerate(centroids):
+            dist = self.euclidean_distance(point , centroid) # Get the euclidean distance
+            if dist < min_dist :
+               min_dist = dist
+               min_centroid = index
+
+        return min_centroid
+        
+    def euclidean_distance(self , point_a , point_b):
+        return np.sqrt(np.sum(point_a - point_b) ** 2)
+        
+X , y = make_blobs(n_features=2)
+
+#X = np.random.randint(1 , 100 , (100 , 2))
+
+model = KMeans()
+
+model.fit(X)
+
+y_pred = model.predict(X)
+print(y)
+print(y_pred)
 
