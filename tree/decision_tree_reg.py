@@ -1,5 +1,6 @@
 import numpy as np
 from numpy.typing import NDArray , ArrayLike
+from sklearn.metrics import mean_squared_error 
 
 class Node :
     """Creating Nodes for the Decision Tree Regressor"""
@@ -78,17 +79,20 @@ class DecisionTreeRegressor:
 
     def predict(self , X:ArrayLike=None):
         #return np.array([y for y in self.predict_one(self.root_node , np.array(X))])
-        return np.array([self.predict_one(self.root_node , x) for x in np.array(x)])
+        return np.array([self.predict_one(self.root_node , x) for x in np.array(X)])
 
-x = np.random.normal(size=(100 , 2))
-y = np.random.normal(size=(100 , 1))
+coeff = np.random.randn(2 , 1)
+bias = np.random.randn()
+
+# Get the random values of the datasets
+X = np.random.randn(100 , 2)
+y = np.dot(X , coeff ) + bias
 
 model = DecisionTreeRegressor()
 
-model.fit(x , y)
+model.fit(X , y)
 
-y_pred = model.predict(x)
+y_pred = model.predict(X)
 
-print(y_pred)
-
+print(mean_squared_error(y , y_pred))
 
