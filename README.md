@@ -343,7 +343,7 @@ are very welcome.
 
 ## License
 
-MIT (or the license you choose to add).
+MIT
 
 ---
 
